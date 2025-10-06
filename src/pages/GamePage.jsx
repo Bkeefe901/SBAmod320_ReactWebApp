@@ -5,10 +5,11 @@ import axios from "axios";
 export default function GamePage() {
     const [data, setData] = useState(null);
     const [deck, setDeck] = useState(null);
-    
+    const [numCards, setNumCards] = useState(3);
+    //const [userCards, setUserCards] = useReducer(cardReducer, initialState);
 
 
-    let urlStr = `https://deckofcardsapi.com/api/deck/${deck ? deck : "new"}/draw/?count=3`;
+    let urlStr = `https://deckofcardsapi.com/api/deck/${deck ? deck : "new"}/draw/?count=${numCards}`;
     // need conditional str like:
     // // let urlStr = "https://deckofcardsapi.com/api/${deck ? deck_id : "new"}/new/draw/?count=${cards ? cards : 4}";
 
@@ -32,7 +33,7 @@ export default function GamePage() {
 
         getData();
 
-    }, []);
+    }, [numCards]);
 
 
   
@@ -68,7 +69,7 @@ export default function GamePage() {
                     <img src={data.cards[2].image} alt={data.cards[2].code} />
                 </div>
                 <div className="buttonCluster">
-                    <button>Hit</button>
+                    <button onClick={()=>{setNumCards()}}>Hit</button>
                     <button>Stand</button>
                     <button>Double</button>
                     <button>Split</button>
