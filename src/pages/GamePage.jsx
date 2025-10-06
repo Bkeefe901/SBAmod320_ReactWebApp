@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 export default function GamePage() {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState([]);
     const [deck, setDeck] = useState(null);
     const [numCards, setNumCards] = useState(3);
     //const [userCards, setUserCards] = useReducer(cardReducer, initialState);
@@ -21,10 +21,11 @@ export default function GamePage() {
                 let res = await axios.get(urlStr);
 
                 //console.log(res.data);
-                setData(res.data);
+                setData(prev => [...prev,...res.data.cards]);
                 // need to get the deck id and save it for drawing new cards
                 setDeck(res.data.deck_id);
-                // console.log(res.data.cards[2].value)
+                console.log(res.data.deck_id)
+                
             } catch (err) {
                 console.error(`❌ Error - ${err.message}`);
 
@@ -54,22 +55,22 @@ export default function GamePage() {
         return (
             <>
                 <h2>Dealer's Cards</h2>
-                <h3>Visible Count: {cardValue(data.cards[0].value)}</h3>
+                <h3>Visible Count: {cardValue(data[0].value)}</h3>
                 <div>
-                    <img style={ {height: '315px'}} src="../../public/images/CardBack.png" alt={data.cards[0].code} />
-                    <img src={data.cards[0].image} alt={data.cards[0].code} />
+                    <img style={ {height: '315px'}} src="../../public/images/CardBack.png" alt={data[0].code} />
+                    <img src={data[0].image} alt={data[0].code} />
                 </div>
                 <br />
                 <br />
                 <br />
                 <h2>Your Cards</h2>
-                <h3>Count: {cardValue(data.cards[1].value) + cardValue(data.cards[2].value)}</h3>
+                <h3>Count: {cardValue(data[1].value) + cardValue(data[2].value)}</h3>
                 <div>
-                    <img src={data.cards[1].image} alt={data.cards[1].code} />
-                    <img src={data.cards[2].image} alt={data.cards[2].code} />
+                    <img src={data[1].image} alt={data[1].code} />
+                    <img src={data[2].image} alt={data[2].code} />
                 </div>
                 <div className="buttonCluster">
-                    <button onClick={()=>{setNumCards()}}>Hit</button>
+                    <button onClick={()=>{setNumCards(1)}}>Hit</button>
                     <button>Stand</button>
                     <button>Double</button>
                     <button>Split</button>
@@ -80,7 +81,7 @@ export default function GamePage() {
 
 
 
-    return data ? loaded() : loading();
+    return data.length > 2 ? loaded() : loading();
 }
 
 
