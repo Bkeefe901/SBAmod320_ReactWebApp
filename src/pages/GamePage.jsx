@@ -3,13 +3,22 @@ import axios from "axios";
 
 
 export default function GamePage() {
+    // array of cards from deck that have been dealt
     const [data, setData] = useState([]);
+
+    // Sets the unique code for a deck, from the api, so that on each new card it comes from the same deck
     const [deck, setDeck] = useState(null);
-    const [numCards, setNumCards] = useState(3);
+
+    // Sets the number of cards to be drawn from the deck
+    const [dealCards, setDealCards] = useState(3);
+
+    // Sets who is receiving the new card
+    const [receiver, setReceiver] = useState();
+    
     //const [userCards, setUserCards] = useReducer(cardReducer, initialState);
 
 
-    let urlStr = `https://deckofcardsapi.com/api/deck/${deck ? deck : "new"}/draw/?count=${numCards}`;
+    let urlStr = `https://deckofcardsapi.com/api/deck/${deck ? deck : "new"}/draw/?count=${dealCards}`;
     // need conditional str like:
     // // let urlStr = "https://deckofcardsapi.com/api/${deck ? deck_id : "new"}/new/draw/?count=${cards ? cards : 4}";
 
@@ -34,7 +43,7 @@ export default function GamePage() {
 
         getData();
 
-    }, [numCards]);
+    }, [dealCards]);
 
 
   
@@ -70,10 +79,8 @@ export default function GamePage() {
                     <img src={data[2].image} alt={data[2].code} />
                 </div>
                 <div className="buttonCluster">
-                    <button onClick={()=>{setNumCards(1)}}>Hit</button>
+                    <button onClick={()=>{setDealCards(1)}}>Hit</button>
                     <button>Stand</button>
-                    <button>Double</button>
-                    <button>Split</button>
                 </div>
             </>
         )
