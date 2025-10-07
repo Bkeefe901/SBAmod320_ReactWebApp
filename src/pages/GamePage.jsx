@@ -3,14 +3,17 @@ import axios from "axios";
 
 
 export default function GamePage() {
-    // array of cards for the user to be dealt from original deck
+    // array of cards for the player to be dealt from original deck
     const [data, setData] = useState([]);
 
     // array of cards for dealer to be dealt from original deck
     const [dealerData, setDealerData] = useState([]);
 
-    // Sets the unique code for a deck, from the api, so that on each new card it comes from the same deck
-    //const [deck, setDeck] = useState(null);
+    // arrary of cards currently dealt to player
+    const [playerHand, setPlayerHand] = useState(null);
+
+    //array of cards currently dealt to dealer
+    const [dealerHand, setDealerHand] = useState(null);
 
 
     // Sets who is receiving the new card
@@ -33,13 +36,21 @@ export default function GamePage() {
                 let cards = [...res.data.cards];
                 let numCards = cards.length;
 
-                let userCards = cards.slice(0, (numCards / 2));
-                let dealerCards = cards.slice((numCards / 2), numCards);
+                let userDeck = cards.slice(0, (numCards / 2));
+                let dealerDeck = cards.slice((numCards / 2), numCards);
 
 
-                setData(userCards);
+                setData(userDeck);
                 // dispatch({type: "initial", payload: { data}});
-                setDealerData(dealerCards);
+                setDealerData(dealerDeck);
+
+                let playersCards = userDeck.slice(0,2);
+                setPlayerHand(playersCards);
+
+                // console.log(playerHand);
+
+                let dealersCards = dealerDeck.slice(0,1);
+                setDealerHand(dealersCards);
 
 
             } catch (err) {
@@ -66,17 +77,17 @@ export default function GamePage() {
 
     let loaded = () => {
 
-
+        console.log("DealerHand: ", dealerHand)
 
         return (
             <>
                 <h2>Dealer's Cards</h2>
-                <Hand state={dealerData} kind='dealer' />
+                <Hand state={dealerHand} kind='dealer' />
                 <br />
                 <br />
                 <br />
                 <h2>Your Cards</h2>
-                <Hand state={data} kind='player' />
+                <Hand state={playerHand} kind='player' />
                 <div className="buttonCluster">
                     <button>Hit</button>
                     <button>Stand</button>
@@ -87,38 +98,66 @@ export default function GamePage() {
 
 
 
-    return data.length > 1 ? loaded() : loading();
+    return (playerHand && dealerHand) ? loaded() : loading();
 }
 
 
 
 // Components ///////////////////////////////////////////
 
+
+
 function Hand({ state, kind }) {
+
+    const player = state.map((card) => {
+        // console.log(card);
+        return <Card card={card} />
+    })
+
+    // const dealer = state.map((card) => {
+    //     // console.log(card);
+    //     <Card card={card} />
+    // })
 
 
 
     return kind == 'player' ?
         (
             <>
-                <h3>Count: {cardValue(state[0].value) + cardValue(state[1].value)}</h3>
+                <Count state={state}/>
                 <div>
-                    <img src={state[0].image} alt={state[0].code} />
-                    <img src={state[1].image} alt={state[1].code} />
+                    {player}
                 </div>
             </>
         ) :
         (
             <>
-                <h3>Visible Count: {cardValue(state[0].value)}</h3>
+                <Count state={state}/>
                 <div>
-                    <img style={{ height: '315px' }} src="../../public/images/CardBack.png" alt={state[0].code} />
-                    <img src={state[0].image} alt={state[0].code} />
+                    <img style={{ height: '315px' }} src="../../public/images/CardBack.png" alt="Down Card" />
+                    {/* <img src={state[0].image} alt={state[0].code} /> */}
+                    {player}
                 </div>
             </>
         )
 
 
+}
+function Count({state}){
+
+    let count = 0
+
+    state.forEach((card)=> {
+        console.log(card.value);
+        count += cardValue(card.value);
+    })
+
+    return <h3>Count: {count}</h3>
+}
+
+function Card({card}){
+    console.log(card);
+    return <img  src={card.image} alt={card.code}/>
 }
 
 
