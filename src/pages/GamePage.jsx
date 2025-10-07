@@ -16,7 +16,7 @@ export default function GamePage() {
     // Sets who is receiving the new card
     const [receiver, setReceiver] = useState();
 
-    //const [userCards, setUserCards] = useReducer(cardReducer, initialState);
+    // const [playerCards, dispatch] = useReducer(cardReducer, initialState);
 
 
     let urlStr = `https://deckofcardsapi.com/api/deck/new/draw/?count=24`;
@@ -38,6 +38,7 @@ export default function GamePage() {
 
 
                 setData(userCards);
+                // dispatch({type: "initial", payload: { data}});
                 setDealerData(dealerCards);
 
 
@@ -70,12 +71,12 @@ export default function GamePage() {
         return (
             <>
                 <h2>Dealer's Cards</h2>
-                <Cards state={dealerData} kind='dealer' />
+                <Hand state={dealerData} kind='dealer' />
                 <br />
                 <br />
                 <br />
                 <h2>Your Cards</h2>
-                <Cards state={data} kind='player' />
+                <Hand state={data} kind='player' />
                 <div className="buttonCluster">
                     <button>Hit</button>
                     <button>Stand</button>
@@ -91,11 +92,11 @@ export default function GamePage() {
 
 
 
-// Components
+// Components ///////////////////////////////////////////
 
-function Cards({ state, kind }) {
+function Hand({ state, kind }) {
 
-    
+
 
     return kind == 'player' ?
         (
@@ -122,13 +123,26 @@ function Cards({ state, kind }) {
 
 
 
-// Reducer Function
+
+
+// Reducer Function //////////////////////////////////
 
 
 
 
 
-// Helper Functions
+
+
+
+
+
+
+
+
+
+
+
+// Helper Functions ///////////////////////////////////////
 
 
 function cardValue(card) {
