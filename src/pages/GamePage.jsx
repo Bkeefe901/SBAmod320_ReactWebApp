@@ -4,10 +4,10 @@ import axios from "axios";
 
 export default function GamePage() {
     // array of cards for the player to be dealt from original deck
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null);
 
     // array of cards for dealer to be dealt from original deck
-    const [dealerData, setDealerData] = useState([]);
+    const [dealerData, setDealerData] = useState(null);
 
     // arrary of cards currently dealt to player
     const [playerHand, setPlayerHand] = useState(null);
@@ -26,6 +26,9 @@ export default function GamePage() {
     // need conditional str like:
     // // let urlStr = "https://deckofcardsapi.com/api/${deck ? deck_id : "new"}/new/draw/?count=${cards ? cards : 4}";
 
+    // let userDeck = [];
+    // let dealerDeck = [];
+
     useEffect(() => {
         async function getData() {
             try {
@@ -33,24 +36,25 @@ export default function GamePage() {
 
                 let res = await axios.get(urlStr);
 
-                let cards = [...res.data.cards];
+                let cards = [...res.data.cards]; // the array of cards from the deck object we fetched
                 let numCards = cards.length;
 
-                let userDeck = cards.slice(0, (numCards / 2));
-                let dealerDeck = cards.slice((numCards / 2), numCards);
+                let firstHalf = cards.slice(0, (numCards / 2)); // half the cards to pick from for playersHand
+                let secondHalf = cards.slice((numCards / 2), numCards); // half the cards to pick from for dealersHand
+
+                let playersCards = firstHalf.splice(0,2); // array variable set to the first 2 cards from firstHalf while removing them from firstHalf in place.
+
+                let dealersCards = secondHalf.splice(0,1);
 
 
-                setData(userDeck);
-                // dispatch({type: "initial", payload: { data}});
-                setDealerData(dealerDeck);
 
-                let playersCards = userDeck.slice(0,2);
+                setData(firstHalf); // setData to that first half of cards
+                setDealerData(secondHalf); // setDealer data to the second half of cards
                 setPlayerHand(playersCards);
-
-                // console.log(playerHand);
-
-                let dealersCards = dealerDeck.slice(0,1);
                 setDealerHand(dealersCards);
+                console.log(data);
+
+                        
 
 
             } catch (err) {
@@ -77,7 +81,7 @@ export default function GamePage() {
 
     let loaded = () => {
 
-        console.log("DealerHand: ", dealerHand)
+        // console.log("DealerHand: ", dealerHand)
 
         return (
             <>
@@ -89,7 +93,12 @@ export default function GamePage() {
                 <h2>Your Cards</h2>
                 <Hand state={playerHand} kind='player' />
                 <div className="buttonCluster">
-                    <button>Hit</button>
+                    <button onClick={()=>{
+                        let cards = data;
+                        let playerCards = cards.splice(0,1);
+                        setData(cards);
+                        setPlayerHand([...playerHand, ...playerCards])
+                    }}>Hit</button>
                     <button>Stand</button>
                 </div>
             </>
@@ -109,9 +118,11 @@ export default function GamePage() {
 
 function Hand({ state, kind }) {
 
+    // state.forEach((card))
+
     const player = state.map((card) => {
         // console.log(card);
-        return <Card card={card} />
+        return <Card key={card.code} card={card} />
     })
 
     // const dealer = state.map((card) => {
@@ -134,7 +145,7 @@ function Hand({ state, kind }) {
             <>
                 <Count state={state}/>
                 <div>
-                    <img style={{ height: '315px' }} src="../../public/images/CardBack.png" alt="Down Card" />
+                    <img style={{ height: '315px' }} src="../../images/CardBack.png" alt="Down Card" />
                     {/* <img src={state[0].image} alt={state[0].code} /> */}
                     {player}
                 </div>
@@ -148,7 +159,7 @@ function Count({state}){
     let count = 0
 
     state.forEach((card)=> {
-        console.log(card.value);
+        // console.log(card.value);
         count += cardValue(card.value);
     })
 
@@ -156,7 +167,7 @@ function Count({state}){
 }
 
 function Card({card}){
-    console.log(card);
+    // console.log(card);
     return <img  src={card.image} alt={card.code}/>
 }
 
