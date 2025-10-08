@@ -117,8 +117,12 @@ export default function GamePage() {
 
 
 function Hand({ state, kind }) {
+    // let cardCount = 0;
+    // state.forEach((card) => {
+    //     cardCount += cardValue(card.value);
+    // })
 
-    // state.forEach((card))
+
 
     const player = state.map((card) => {
         // console.log(card);
@@ -156,12 +160,17 @@ function Hand({ state, kind }) {
 }
 function Count({state}){
 
-    let count = 0
+    let count = 0;
+    let aceCount = 0;
 
     state.forEach((card)=> {
-        // console.log(card.value);
+        card.value == 'ACE' ? aceCount++ : aceCount = aceCount;
         count += cardValue(card.value);
     })
+
+
+    if(count > 21 && !aceCount) return <h1>BUSTED!!</h1>
+    if(count > 21) count = count - 10;
 
     return <h3>Count: {count}</h3>
 }
