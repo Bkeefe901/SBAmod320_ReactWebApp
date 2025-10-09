@@ -117,23 +117,13 @@ export default function GamePage() {
 
 
 function Hand({ state, kind }) {
-    // let cardCount = 0;
-    // state.forEach((card) => {
-    //     cardCount += cardValue(card.value);
-    // })
-
-
 
     const player = state.map((card) => {
         // console.log(card);
         return <Card key={card.code} card={card} />
     })
 
-    // const dealer = state.map((card) => {
-    //     // console.log(card);
-    //     <Card card={card} />
-    // })
-
+   // Will probably need to use if statements for kind and if its the 'dealer' and dealerHand < 2 I return the back of card image with the {player} otherwise just return {player}
 
 
     return kind == 'player' ?
