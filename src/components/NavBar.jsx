@@ -11,7 +11,7 @@ export default function NavBar() {
     }
 
     return (
-        <nav width={'100%'}>
+        <nav style={{marginBottom: '20px'}} >
             <ul style={style}>
                 <Link to={"/"}>
                     <li>Home</li>

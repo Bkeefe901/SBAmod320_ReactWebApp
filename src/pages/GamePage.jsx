@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 
@@ -17,6 +17,13 @@ export default function GamePage() {
 
     // state for dealers turn to draw
     const [dealerTurn, setDealerTurn] = useState(false);
+
+    // state to keep track of player bust
+    const [playerBust, setPlayerBust] =  useState(false);
+
+    // state to keep track of dealer bust
+    const [dealerBust, setDealerBust] = useState(false);
+ 
 
 
 
@@ -56,11 +63,21 @@ export default function GamePage() {
     }, []);
 
 
-    // useEffect(() => {
+    useEffect(() => {
+        function drawCard(){
+            setTimeout(() => {
+            let cards = dealerData;
+            let dealersCards = cards.splice(0, 1);
+            setDealerData(cards);
+            setDealerHand([...dealerHand,...dealersCards]);
+        }, 1500)
+        }
+
+        // Need to create if statement to see if dealers count is less than 17. and if so we run the drawcard function. Which means we probably need to have dealerCount as a state. We could put that in a while loop. ie. while dealerCount < 17 => drawCard()
+        
 
 
-
-    // },[dealerTurn])
+    }, [dealerTurn])
 
 
 
@@ -73,24 +90,35 @@ export default function GamePage() {
 
     let loaded = () => {
 
-        // console.log("DealerHand: ", dealerHand)
+        
 
         return (
             <>
                 <h2>Dealer's Cards</h2>
-                <Hand state={dealerHand} kind='dealer' dealerTurn={dealerTurn} />
+                <Hand 
+                    state={dealerHand} 
+                    kind='dealer' 
+                    dealerTurn={dealerTurn}
+                    setDealerBust={setDealerBust}
+                    />
                 <br />
                 <br />
                 <br />
                 <h2>Your Cards</h2>
-                <Hand state={playerHand} kind='player' />
+                <Hand 
+                    state={playerHand} 
+                    kind='player' 
+                    setPlayerBust={setPlayerBust}
+                    />
                 <div className="buttonCluster">
                     <button onClick={() => {
                         let cards = data;
                         let playerCards = cards.splice(0, 1);
                         setData(cards);
                         setPlayerHand([...playerHand, ...playerCards])
-                    }}>Hit</button>
+                    }}
+                    disabled={dealerTurn}
+                    >Hit</button>
 
                     <button onClick={() => {
                         let cards = dealerData;
@@ -98,7 +126,9 @@ export default function GamePage() {
                         setDealerData(cards);
                         setDealerHand([...dealerHand, ...dealersCards]);
                         setDealerTurn(true);
-                    }}>Stand</button>
+                    }}
+                    disabled={dealerTurn}
+                    >Stand</button>
                 </div>
             </>
         )
@@ -115,7 +145,7 @@ export default function GamePage() {
 
 
 
-function Hand({ state, kind, dealerTurn }) {
+function Hand({ state, kind, dealerTurn, setDealerBust, setPlayerBust }) {
 
 
     function CardBack() {
@@ -132,7 +162,7 @@ function Hand({ state, kind, dealerTurn }) {
     return kind == 'player' ?
         (
             <>
-                <Count state={state} />
+                <Count state={state} setPlayerBust={setPlayerBust} kind={kind} />
                 <div>
                     {player}
                 </div>
@@ -140,7 +170,7 @@ function Hand({ state, kind, dealerTurn }) {
         ) :
         (
             <>
-                <Count state={state} />
+                <Count state={state} setDealerBust={setDealerBust} kind={kind} />
                 <div>
                     <CardBack />
                     {player}
@@ -152,7 +182,7 @@ function Hand({ state, kind, dealerTurn }) {
 
 
 
-function Count({ state }) {
+function Count({ state, setPlayerBust, setDealerBust, kind }) {
 
     let count = 0;
     let aceCount = 0;
@@ -162,7 +192,15 @@ function Count({ state }) {
         count += cardValue(card.value);
     })
 
-    if (count > 21 && !aceCount) return <h1>BUSTED!!</h1>
+    if (count > 21 && !aceCount){
+        if(kind == 'player'){
+            setPlayerBust(true);
+        } else{
+            setDealerBust(true);
+        }
+        
+        return <h1>BUSTED!!</h1>
+    } 
     if (count > 21) count = count - 10;
 
     return <h3>Count: {count}</h3>
