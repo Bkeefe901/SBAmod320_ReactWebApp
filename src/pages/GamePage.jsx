@@ -15,19 +15,16 @@ export default function GamePage() {
     //array of cards currently dealt to dealer
     const [dealerHand, setDealerHand] = useState(null);
 
+    // state for dealers turn to draw
+    const [dealerTurn, setDealerTurn] = useState(false);
 
-    // Sets who is receiving the new card
-    const [receiver, setReceiver] = useState();
 
-    // const [playerCards, dispatch] = useReducer(cardReducer, initialState);
 
 
     let urlStr = `https://deckofcardsapi.com/api/deck/new/draw/?count=24`;
-    // need conditional str like:
-    // // let urlStr = "https://deckofcardsapi.com/api/${deck ? deck_id : "new"}/new/draw/?count=${cards ? cards : 4}";
 
-    // let userDeck = [];
-    // let dealerDeck = [];
+
+
 
     useEffect(() => {
         async function getData() {
@@ -42,37 +39,32 @@ export default function GamePage() {
                 let firstHalf = cards.slice(0, (numCards / 2)); // half the cards to pick from for playersHand
                 let secondHalf = cards.slice((numCards / 2), numCards); // half the cards to pick from for dealersHand
 
-                let playersCards = firstHalf.splice(0,2); // array variable set to the first 2 cards from firstHalf while removing them from firstHalf in place.
+                let playersCards = firstHalf.splice(0, 2); // array variable set to the first 2 cards from firstHalf while removing them from firstHalf in place.
 
-                let dealersCards = secondHalf.splice(0,1);
-
-
+                let dealersCards = secondHalf.splice(0, 1);
 
                 setData(firstHalf); // setData to that first half of cards
                 setDealerData(secondHalf); // setDealer data to the second half of cards
                 setPlayerHand(playersCards);
                 setDealerHand(dealersCards);
-                console.log(data);
-
-                        
-
 
             } catch (err) {
                 console.error(`❌ Error - ${err.message}`);
-
             }
         }
-
         getData();
-
     }, []);
 
 
+    // useEffect(() => {
 
 
-    // need to conditionally add new image for each hit 
-    // need logic for dealer to draw or hold after player hits stand
-    // need to keep track of score bust bust and 
+
+    // },[dealerTurn])
+
+
+
+
 
 
     let loading = () => {
@@ -86,29 +78,36 @@ export default function GamePage() {
         return (
             <>
                 <h2>Dealer's Cards</h2>
-                <Hand state={dealerHand} kind='dealer' />
+                <Hand state={dealerHand} kind='dealer' dealerTurn={dealerTurn} />
                 <br />
                 <br />
                 <br />
                 <h2>Your Cards</h2>
                 <Hand state={playerHand} kind='player' />
                 <div className="buttonCluster">
-                    <button onClick={()=>{
+                    <button onClick={() => {
                         let cards = data;
-                        let playerCards = cards.splice(0,1);
+                        let playerCards = cards.splice(0, 1);
                         setData(cards);
                         setPlayerHand([...playerHand, ...playerCards])
                     }}>Hit</button>
-                    <button>Stand</button>
+
+                    <button onClick={() => {
+                        let cards = dealerData;
+                        let dealersCards = cards.splice(0, 1);
+                        setDealerData(cards);
+                        setDealerHand([...dealerHand, ...dealersCards]);
+                        setDealerTurn(true);
+                    }}>Stand</button>
                 </div>
             </>
         )
     }
-
-
-
     return (playerHand && dealerHand) ? loaded() : loading();
 }
+
+
+
 
 
 
@@ -116,20 +115,24 @@ export default function GamePage() {
 
 
 
-function Hand({ state, kind }) {
+function Hand({ state, kind, dealerTurn }) {
+
+
+    function CardBack() {
+        if (!dealerTurn) {
+            return <img style={{ height: '315px' }} src="../../images/CardBack.png" alt="Down Card" />
+        }
+    }
 
     const player = state.map((card) => {
         // console.log(card);
         return <Card key={card.code} card={card} />
     })
 
-   // Will probably need to use if statements for kind and if its the 'dealer' and dealerHand < 2 I return the back of card image with the {player} otherwise just return {player}
-
-
     return kind == 'player' ?
         (
             <>
-                <Count state={state}/>
+                <Count state={state} />
                 <div>
                     {player}
                 </div>
@@ -137,54 +140,38 @@ function Hand({ state, kind }) {
         ) :
         (
             <>
-                <Count state={state}/>
+                <Count state={state} />
                 <div>
-                    <img style={{ height: '315px' }} src="../../images/CardBack.png" alt="Down Card" />
-                    {/* <img src={state[0].image} alt={state[0].code} /> */}
+                    <CardBack />
                     {player}
                 </div>
             </>
         )
-
-
 }
-function Count({state}){
+
+
+
+
+function Count({ state }) {
 
     let count = 0;
     let aceCount = 0;
 
-    state.forEach((card)=> {
+    state.forEach((card) => {
         card.value == 'ACE' ? aceCount++ : aceCount = aceCount;
         count += cardValue(card.value);
     })
 
-
-    if(count > 21 && !aceCount) return <h1>BUSTED!!</h1>
-    if(count > 21) count = count - 10;
+    if (count > 21 && !aceCount) return <h1>BUSTED!!</h1>
+    if (count > 21) count = count - 10;
 
     return <h3>Count: {count}</h3>
 }
 
-function Card({card}){
+function Card({ card }) {
     // console.log(card);
-    return <img  src={card.image} alt={card.code}/>
+    return <img src={card.image} alt={card.code} />
 }
-
-
-
-
-
-// Reducer Function //////////////////////////////////
-
-
-
-
-
-
-
-
-
-
 
 
 
