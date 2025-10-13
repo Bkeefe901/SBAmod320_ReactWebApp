@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+// Components
+import Hand from "../components/Hand";
+
+
 
 export default function GamePage() {
     // array of cards for the player to be dealt from original deck
@@ -139,7 +143,7 @@ export default function GamePage() {
                         setData(cards);
                         setPlayerHand([...playerHand, ...playerCards])
                     }}
-                        disabled={dealerTurn}
+                        disabled={dealerTurn || playerBust}
                     >Hit</button>
 
                     <button onClick={() => {
@@ -149,7 +153,7 @@ export default function GamePage() {
                         setDealerHand([...dealerHand, ...dealersCards]);
                         setDealerTurn(true);
                     }}
-                        disabled={dealerTurn}
+                        disabled={dealerTurn || playerBust}
                     >Stand</button>
                 </div>
             </>
@@ -178,116 +182,4 @@ export default function GamePage() {
 
 
 
-
-
-
-// Components ///////////////////////////////////////////
-
-
-
-function Hand({ handState, kind, dealerTurn, setBust, setCount, setWinner }) {
-
-
-    function CardBack() {
-        if (!dealerTurn) {
-            return <img style={{ height: '315px' }} src="../../images/CardBack.png" alt="Down Card" />
-        }
-    }
-
-    const player = handState.map((card) => {
-        // console.log(card);
-        return <Card key={card.code} card={card} />
-    })
-
-    return kind == 'player' ?
-        (
-            <>
-                <Count handState={handState} setBust={setBust} setCount={setCount} kind={kind} setWinner={setWinner} />
-                <div>
-                    {player}
-                </div>
-            </>
-        ) :
-        (
-            <>
-                <Count handState={handState} setBust={setBust} setCount={setCount} kind={kind} setWinner={setWinner} />
-                <div>
-                    <CardBack />
-                    {player}
-                </div>
-            </>
-        )
-}
-
-
-
-
-
-function Count({ handState, setBust, setCount, kind, setWinner }) {
-    let count = 0;
-    let aceCount = 0;
-
-    handState.forEach((card) => {
-        if (card.value === 'ACE') aceCount++;
-        count += cardValue(card.value);
-    });
-
-    if (count > 21 && aceCount > 0) {
-        // downgrade ACEs from 11 to 1
-        while (count > 21 && aceCount > 0) {
-            count -= 10;
-            aceCount--;
-        }
-    }
-
-    // handle busts
-    useEffect(() => {
-        if (count > 21) {
-            setBust(true);
-            if (kind == 'player') {
-                setWinner('Dealer');
-            } else setWinner('You');
-        }
-    }, [count]);
-
-    // handle dealer count updates safely
-    useEffect(() => {
-        setCount(count);
-    }, [count]);
-
-    return <h3>Count: {count > 21 ? "BUSTED!" : count}</h3>;
-}
-
-
-
-
-
-
-
-
-
-function Card({ card }) {
-    // console.log(card);
-    return <img src={card.image} alt={card.code} />
-}
-
-
-
-
-
-
-// Helper Functions ///////////////////////////////////////
-
-
-function cardValue(card) {
-    if (card == "ACE") {
-        return 11;
-    }
-    else if (card == 'JACK' || card == 'QUEEN' || card == 'KING') {
-        return 10;
-    } else {
-        return Number(card);
-    }
-
-}
 
