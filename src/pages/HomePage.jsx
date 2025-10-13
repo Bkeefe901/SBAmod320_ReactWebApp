@@ -2,12 +2,6 @@ export default function HomePage(){
 
 
 
-
-
-
-
-
-
     return (
         <div className="HomePage">
             <img style={{width: '96%', border: '2px, solid, white', borderRadius: '5px'}} src="../../public/images/HeroBanner.png" alt="Black Jack Banner" />
