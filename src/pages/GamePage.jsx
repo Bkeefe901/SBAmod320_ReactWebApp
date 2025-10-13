@@ -27,8 +27,14 @@ export default function GamePage() {
     // state to keep track of dealers count
     const [dealerCount, setDealerCount] = useState(0);
 
+    // state to keep track of players count
+    const [playerCount, setPlayerCount] = useState(0);
+
     // state for Winner
     const [winner, setWinner] = useState(null);
+
+    // state to reset game
+    const [reset, setReset] = useState(false);
 
 
 
@@ -66,23 +72,27 @@ export default function GamePage() {
             }
         }
         getData();
-    }, []);
+    }, [reset]);
 
 
     useEffect(() => {
 
-        if(dealerTurn && !dealerBust && dealerCount < 17){
+        if (dealerTurn && !dealerBust && dealerCount < 17) {
             const timeout = setTimeout(() => {
-            let cards = dealerData;
-            let newCard = cards.splice(0, 1);
-            setDealerData(cards);
-            setDealerHand([...dealerHand, ...newCard]);
-        }, 1200);
-        return () => clearTimeout(timeout);
+                let cards = dealerData;
+                let newCard = cards.splice(0, 1);
+                setDealerData(cards);
+                setDealerHand([...dealerHand, ...newCard]);
+            }, 1200);
+            return () => clearTimeout(timeout);
         }
 
-        if(dealerTurn && dealerCount >= 17 && !dealerBust){
-            
+        if (dealerTurn && dealerCount >= 17 && !dealerBust) {
+            if (dealerCount > playerCount) {
+                setWinner('dealer');
+            } else if (playerCount > dealerCount) {
+                setWinner('player');
+            } else setWinner('draw');
         }
 
     }, [dealerTurn, dealerBust, dealerCount])
@@ -108,7 +118,8 @@ export default function GamePage() {
                     kind='dealer'
                     dealerTurn={dealerTurn}
                     setBust={setDealerBust}
-                    setDealerCount={setDealerCount}
+                    setCount={setDealerCount}
+                    setWinner={setWinner}
                 />
                 <br />
                 <br />
@@ -118,6 +129,8 @@ export default function GamePage() {
                     handState={playerHand}
                     kind='player'
                     setBust={setPlayerBust}
+                    setCount={setPlayerCount}
+                    setWinner={setWinner}
                 />
                 <div className="buttonCluster">
                     <button onClick={() => {
@@ -142,8 +155,25 @@ export default function GamePage() {
             </>
         )
     }
-    return (playerHand && dealerHand) ? loaded() : loading();
+    // return (playerHand && dealerHand) ? loaded() : loading();
+    if (winner) {
+        return (
+            <>
+                <h1>{winner} Wins!</h1>
+                {/* <button onClick={()=>{setReset(prev => !prev)}}>Play Again</button> */}
+                {loaded()}
+            </>
+        )
+    }
+    else if (playerHand && dealerHand) {
+        return loaded();
+    } else {
+        return loading();
+    }
+
 }
+
+
 
 
 
@@ -154,7 +184,7 @@ export default function GamePage() {
 
 
 
-function Hand({ handState, kind, dealerTurn, setBust, setDealerCount }) {
+function Hand({ handState, kind, dealerTurn, setBust, setCount, setWinner }) {
 
 
     function CardBack() {
@@ -171,7 +201,7 @@ function Hand({ handState, kind, dealerTurn, setBust, setDealerCount }) {
     return kind == 'player' ?
         (
             <>
-                <Count handState={handState} setBust={setBust} kind={kind} />
+                <Count handState={handState} setBust={setBust} setCount={setCount} kind={kind} setWinner={setWinner} />
                 <div>
                     {player}
                 </div>
@@ -179,7 +209,7 @@ function Hand({ handState, kind, dealerTurn, setBust, setDealerCount }) {
         ) :
         (
             <>
-                <Count handState={handState} setBust={setBust} kind={kind} setDealerCount={setDealerCount} />
+                <Count handState={handState} setBust={setBust} setCount={setCount} kind={kind} setWinner={setWinner} />
                 <div>
                     <CardBack />
                     {player}
@@ -192,38 +222,39 @@ function Hand({ handState, kind, dealerTurn, setBust, setDealerCount }) {
 
 
 
-function Count({ handState, setBust, kind, setDealerCount }) {
-  let count = 0;
-  let aceCount = 0;
+function Count({ handState, setBust, setCount, kind, setWinner }) {
+    let count = 0;
+    let aceCount = 0;
 
-  handState.forEach((card) => {
-    if (card.value === 'ACE') aceCount++;
-    count += cardValue(card.value);
-  });
+    handState.forEach((card) => {
+        if (card.value === 'ACE') aceCount++;
+        count += cardValue(card.value);
+    });
 
-  if (count > 21 && aceCount > 0) {
-    // downgrade ACEs from 11 to 1
-    while (count > 21 && aceCount > 0) {
-      count -= 10;
-      aceCount--;
+    if (count > 21 && aceCount > 0) {
+        // downgrade ACEs from 11 to 1
+        while (count > 21 && aceCount > 0) {
+            count -= 10;
+            aceCount--;
+        }
     }
-  }
 
-  // handle busts
-  useEffect(() => {
-    if (count > 21) {
-      setBust(true);
-    }
-  }, [count, kind, setBust]);
+    // handle busts
+    useEffect(() => {
+        if (count > 21) {
+            setBust(true);
+            if (kind == 'player') {
+                setWinner('dealer');
+            } else setWinner('player');
+        }
+    }, [count]);
 
-  // handle dealer count updates safely
-  useEffect(() => {
-    if (kind === 'dealer') {
-      setDealerCount(count);
-    }
-  }, [count, kind, setDealerCount]);
+    // handle dealer count updates safely
+    useEffect(() => {
+        setCount(count);
+    }, [count]);
 
-  return <h3>Count: {count > 21 ? "BUSTED!" : count}</h3>;
+    return <h3>Count: {count > 21 ? "BUSTED!" : count}</h3>;
 }
 
 
