@@ -88,9 +88,9 @@ export default function GamePage() {
 
         if (dealerTurn && dealerCount >= 17 && !dealerBust) { // Once at count >= 17, conditionally determine winner
             if (dealerCount > playerCount) {
-                setWinner('Dealer');
+                setWinner('Dealer Wins');
             } else if (playerCount > dealerCount) {
-                setWinner('You');
+                setWinner('You Won!!');
             } else setWinner('Draw');
         }
 
@@ -153,9 +153,13 @@ export default function GamePage() {
     }
 
     if (winner) {
+
+        let color;
+        winner == 'Dealer Wins' ? color = 'red' : color = 'green';
+
         return (
             <>
-                <h1>Winner: {winner}</h1>
+                <div style={{backgroundColor: color}}><h1>{winner}</h1></div>
                 <button className="playAgain" onClick={()=>{ // easy way to restart game by just reloading page
                     window.location.reload();}}>Play Again</button>
                 {loaded()}
