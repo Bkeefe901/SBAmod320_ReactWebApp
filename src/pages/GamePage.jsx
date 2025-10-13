@@ -94,7 +94,7 @@ export default function GamePage() {
             } else setWinner('Draw');
         }
 
-    }, [dealerTurn, dealerBust, dealerCount])
+    }, [dealerTurn, dealerCount])
 
 
 

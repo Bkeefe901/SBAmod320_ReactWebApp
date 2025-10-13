@@ -19,7 +19,7 @@ export default function Count({ handState, setBust, setCount, kind, setWinner })
         }
     }
 
-    // handles busts
+    // updates count state and handles busts to set winner
     useEffect(() => {
         if (count > 21) {
             setBust(true);
@@ -27,12 +27,10 @@ export default function Count({ handState, setBust, setCount, kind, setWinner })
                 setWinner('Dealer');
             } else setWinner('You');
         }
-    }, [count]);
-
-    // updates count state for dealer and player
-    useEffect(() => {
         setCount(count);
     }, [count]);
+
+
 
     return <h3>Count: {count > 21 ? "BUSTED!" : count}</h3>;
 }

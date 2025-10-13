@@ -19,9 +19,6 @@ export default function NavBar() {
                 <Link to={"game"}>
                     <li>Game</li>
                 </Link>
-                <Link to={"About"}>
-                    <li>About</li>
-                </Link>
             </ul>
         </nav>
     )

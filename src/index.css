@@ -65,12 +65,13 @@ html {
   border: 2px solid rgb(113, 111, 128);
   width: 80px;
   font-size: large;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .buttonCluster > button:active{
   background-color: #060d99;
   transform: translateY(2px);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 1);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 1);
 }
 
 

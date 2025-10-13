@@ -1,87 +1,28 @@
 # SBA 320H - React Web Application Project
 
 
-// Ideas:
-1. Rick and Morty Universe
-    -Pages:
-        a. Characters
-        b. Locations
-        c. Episodes
-2. Black Jack Card Game
-    -Pages:
-        a. HomePage/Instructions
-        b. Game page
-        c. 404 page
-3. War Card Game
-    - Pages:
-        a. HomePage/Instructions
-        b. Game page
-        c. 404 page
+## General Explanation
+This is a react application for playing a game of blackjack against the computer. It has 2 different pages as well as a page-not-found catch all for any other routes. It uses the Deck Of Cards API. It also uses BrowserRouter from react-router-dom as well as the useState and useEffect react hooks. As of now it is a relatively simple version of blackjack. There is no betting and none of the more complex moves such as splitting or doubling down as a result. The player upon loading of the game page has two buttons: 'hit and 'stand'. If they want another card they click the hit button. If they are satisfied, and haven't busted, they click the stand button. The dealer then flips the face down card. They will continue to draw more cards until they have a count greater than 16. If neither player has busted, the winner is whomever has the higher count. You can then click the play again button to play another hand.
+
+## Approach Taken
+My approach was to keep the api call simple, even though they offer keeping track of the deck and cards left, I choose to just pick 24 cards from a deck on loading of the page and assigning half to a state that the dealer will draw from and half to a state the player will draw from. The useEffect hook that runs on initial render splits the array fetched from the api and sets the states for both the player and dealer to each half. It then set those states equal to different variables to be spliced. One card is taken for the dealerHand state and two for the playerHand state. Then the spliced arrays are reset with the setter functions for the dealers data (dealerData state, the pool of cards for the dealer to draw from) and the players data (data state, the pool of cards for the player to draw from). 
+
+The Hand component maps over the playersHand and dealerHand to display their cards on the dom. it also passes the hands states, as well as the setBust setter for  the set states, setCount setter for the count states, the kind variable ('player' or 'dealer') and the setWinner setter for the winner state to the count component. 
+
+The Count component maps of the hand states and counts the value for each card. Since the value for face cards and for the ace arent numbers it gets help from the cardValue function in the helpfunctions.jsx file. It also checks if any aces are in the hand and the count is greater than 21, it will reduce the count by 10, since Aces can be 1 or 11. It uses an useEffect hook to setCount state and also to check if a bust occurs to setWinner.
+
+The Card component just takes the data from the cards in the hand to display the png file that acually gets displayed.
+
+On the GamePage the hit button has an onClick event handler that deals one card at a time to the players hand in essentially the same way as the useEffect hook for the initial render. The stand button has an onClick event handler that also deals a new card to the dealers hand ('flipping over the face down card) and also sets the state for dealerTurn to true which in turn disables the hit and stand button and sets off the useEffect hook for handling the dealers sequence. This effect has a dependency array that includes any change in dealerTurn or dealerCount. Inside it checks if: it's the dealers turn, they havent busted and their count is less than 17. If so It will draw another card inside of a setTimeout with a 1.2 second delay. It then clears out the timeOut. It also checks if: it's the dealers turn, the dealer hasn't busted and their count IS over 17, in which case it will compare the dealer and player count states to set the Winner. Setting the dealerHand in the first 'if' statement will inturn change the dealerCount, from the count component, which in turn runs the useEffect hook again.
+
+Finally the gamepage return is conditionally rendered by first checking if the winner state is not null, if it is not than it displays the Winner with the button to 'Play Again' which just reloads the page if clicked. it also displays the hands, count and buttons. If no winner, it just displays the hands, count and buttons. And of course, to keep react from trying to render before getting data it will just return a loading message before the data is fetched and states set.
 
 
+## Different Approach, Problems, Things Missing
+I think I definitely could have made this app simpler. I probably could have used useReducer to help mangage state so that I didn't need to create so many individual state hooks. I would also like to add betting in the future and possibly attach it to a database to keep track of bets for different users. 
 
-
-
-
-## How it works:
-- On render it shows:
-    - the dealer with one card (one card face down)
-    - Me with 2 cards
-    - 2 buttons under my cards:
-        - Hit
-        - Stand
-    - Count: for dealer and for my cards
-- If I show blackjack:
-    - Some effect (ie. screen changes color and "You win") with button: "Next Hand"
-- If I push Hit button:
-    - New card added to my hand and count changes
-        -If I go over 21:
-            - Some effect (ie. screen changes color and "You Bust") with button: "Next Hand"
-        -If I go over 21 with Ace in hand it drops score by 10
-        -If I hit 21
-            -Same case as if I hit stand button...
--If I hit stand button
-    -dealers face-down card disappears and New card gets displayed
-        -If new Dealer count is >17, Whoever has higher score wins: 
-            - Some effect (ie. screen changes color and "You win/lose/draw") with button: "Next Hand"
-        -If over 17 and Ace in hand drop score by 10. If over 21 after dropping:
-            - Some effect (ie. screen changes color and "Dealer busts, You win") with button: "Next Hand"
-
-
-## Ideas:
-- Maybe should useEffect on render to grab 52 cards from api and save to state 'data' . Then another state variable to point where in 'data' array we are in dealing.
-
-
-## Breakdown of logic
-
-### Feature:
-"- On render it shows:
-    - the dealer with one card (one card face down)
-    - Me with 2 cards
-    - 2 buttons under my cards:
-        - Hit
-        - Stand
-    - Count: for dealer and for my cards
-
-### logic: 
-    Already complete, change api call to save a full deck. create state (ie. 'dealt') to save spot in deck., Or  that can add objects  from data array to newArray and setDealt(newArray); 
-
-
-### Feature:
-- If I show blackjack:
-    - Some effect (ie. screen changes color and "You win") with button: "Next Hand"
-
-### Logic:
-- Map first 3 from data on page. If the second and third are a 10 and an ace: "You Win" and "Next Hand"
-const cardsDealt = dealt.map((card) => {<SomeComponent>/})
-
-
-### Feature
-- If I push Hit button:
-    - New card added to my hand and count changes
-
-### Logic
-- With useReducer:
-    onClick of hit button: "onClick={() => dispatch({ type: "hit", payload: data })}"
-    => goes to dispatch and uses the data array to add a new card to the reducer state. (also I think I need to add keys to the objects in the data array: dealt: true/false, dealtTo: user/dealer)
-
+## Technology and Resources Used
+- Axios
+- React
+- React-Router-DOM
+- [Deck or Cards API](https://deckofcardsapi.com/)
