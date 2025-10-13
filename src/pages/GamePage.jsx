@@ -34,7 +34,7 @@ export default function GamePage() {
     const [winner, setWinner] = useState(null);
 
     // state to reset game
-    const [reset, setReset] = useState(false);
+    // const [reset, setReset] = useState(false);
 
 
 
@@ -72,7 +72,7 @@ export default function GamePage() {
             }
         }
         getData();
-    }, [reset]);
+    }, []);
 
 
     useEffect(() => {
@@ -89,10 +89,10 @@ export default function GamePage() {
 
         if (dealerTurn && dealerCount >= 17 && !dealerBust) {
             if (dealerCount > playerCount) {
-                setWinner('dealer');
+                setWinner('Dealer');
             } else if (playerCount > dealerCount) {
-                setWinner('player');
-            } else setWinner('draw');
+                setWinner('You');
+            } else setWinner('Draw');
         }
 
     }, [dealerTurn, dealerBust, dealerCount])
@@ -159,8 +159,9 @@ export default function GamePage() {
     if (winner) {
         return (
             <>
-                <h1>{winner} Wins!</h1>
-                {/* <button onClick={()=>{setReset(prev => !prev)}}>Play Again</button> */}
+                <h1>Winner: {winner}</h1>
+                <button onClick={()=>{
+                    window.location.reload();}}>Play Again</button>
                 {loaded()}
             </>
         )
@@ -244,8 +245,8 @@ function Count({ handState, setBust, setCount, kind, setWinner }) {
         if (count > 21) {
             setBust(true);
             if (kind == 'player') {
-                setWinner('dealer');
-            } else setWinner('player');
+                setWinner('Dealer');
+            } else setWinner('You');
         }
     }, [count]);
 
