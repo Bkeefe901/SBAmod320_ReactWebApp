@@ -21,6 +21,9 @@ export default function Count({ handState, setBust, setCount, kind, setWinner })
 
     // updates count state and handles busts to set winner
     useEffect(() => {
+        if(kind == 'player' && handState.length == 2 && count == 21){
+            setWinner('You, You Got BlackJack!!')
+        }
         if (count > 21) {
             setBust(true);
             if (kind == 'player') {

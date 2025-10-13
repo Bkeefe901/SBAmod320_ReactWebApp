@@ -17,6 +17,8 @@ On the GamePage the hit button has an onClick event handler that deals one card 
 
 Finally the gamepage return is conditionally rendered by first checking if the winner state is not null, if it is not than it displays the Winner with the button to 'Play Again' which just reloads the page if clicked. it also displays the hands, count and buttons. If no winner, it just displays the hands, count and buttons. And of course, to keep react from trying to render before getting data it will just return a loading message before the data is fetched and states set.
 
+Note: If on render of the page, (Or after hitting play again button, you show a 10 (or face card) and an Ace you automatically win because you got BlackJack!)
+
 
 ## Different Approach, Problems, Things Missing
 I think I definitely could have made this app simpler. I probably could have used useReducer to help mangage state so that I didn't need to create so many individual state hooks. I would also like to add betting in the future and possibly attach it to a database to keep track of bets for different users. 
