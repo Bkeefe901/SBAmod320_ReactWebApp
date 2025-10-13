@@ -15,7 +15,8 @@
 
 
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -24,7 +25,54 @@ body, html {
 
 *,
 *::before,
-*::after{
+*::after {
   box-sizing: inherit;
 }
+
+
+.playAgain {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 0.6em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #26513a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.playAgain:hover {
+  border-color: #646cff;
+}
+
+.playAgain:focus,
+.playAgain:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+.buttonCluster{
+  margin-top: 15px;
+
+}
+
+.buttonCluster > button{
+  margin: 6px;
+  padding: 5px;
+  background-color: rgb(73, 73, 123);
+  border-radius: 8px;
+  border: 2px solid rgb(113, 111, 128);
+  width: 80px;
+  font-size: large;
+}
+
+.buttonCluster > button:active{
+  background-color: #060d99;
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 1);
+}
+
+
+
 

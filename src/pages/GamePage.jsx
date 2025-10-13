@@ -37,18 +37,12 @@ export default function GamePage() {
     // state for Winner
     const [winner, setWinner] = useState(null);
 
-    // state to reset game
-    // const [reset, setReset] = useState(false);
-
-
-
-
 
     let urlStr = `https://deckofcardsapi.com/api/deck/new/draw/?count=24`;
 
 
 
-
+    // on mount to make axios request to fetch api deck
     useEffect(() => {
         async function getData() {
             try {
@@ -68,7 +62,7 @@ export default function GamePage() {
 
                 setData(firstHalf); // setData to that first half of cards
                 setDealerData(secondHalf); // setDealer data to the second half of cards
-                setPlayerHand(playersCards);
+                setPlayerHand(playersCards); 
                 setDealerHand(dealersCards);
 
             } catch (err) {
@@ -79,9 +73,10 @@ export default function GamePage() {
     }, []);
 
 
+    // automates cards delivered to the dealers hand once the stand button is clicked, making it the dealersTurn
     useEffect(() => {
 
-        if (dealerTurn && !dealerBust && dealerCount < 17) {
+        if (dealerTurn && !dealerBust && dealerCount < 17) { // if they havent busted and have less than a count of 17, draws another card
             const timeout = setTimeout(() => {
                 let cards = dealerData;
                 let newCard = cards.splice(0, 1);
@@ -91,7 +86,7 @@ export default function GamePage() {
             return () => clearTimeout(timeout);
         }
 
-        if (dealerTurn && dealerCount >= 17 && !dealerBust) {
+        if (dealerTurn && dealerCount >= 17 && !dealerBust) { // Once at count >= 17, conditionally determine winner
             if (dealerCount > playerCount) {
                 setWinner('Dealer');
             } else if (playerCount > dealerCount) {
@@ -111,9 +106,6 @@ export default function GamePage() {
     }
 
     let loaded = () => {
-
-
-
         return (
             <>
                 <h2>Dealer's Cards</h2>
@@ -159,12 +151,12 @@ export default function GamePage() {
             </>
         )
     }
-    // return (playerHand && dealerHand) ? loaded() : loading();
+
     if (winner) {
         return (
             <>
                 <h1>Winner: {winner}</h1>
-                <button onClick={()=>{
+                <button className="playAgain" onClick={()=>{ // easy way to restart game by just reloading page
                     window.location.reload();}}>Play Again</button>
                 {loaded()}
             </>
