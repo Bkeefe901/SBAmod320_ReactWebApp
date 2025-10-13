@@ -107,7 +107,7 @@ export default function GamePage() {
                     handState={dealerHand}
                     kind='dealer'
                     dealerTurn={dealerTurn}
-                    setDealerBust={setDealerBust}
+                    setBust={setDealerBust}
                     setDealerCount={setDealerCount}
                 />
                 <br />
@@ -117,7 +117,7 @@ export default function GamePage() {
                 <Hand
                     handState={playerHand}
                     kind='player'
-                    setPlayerBust={setPlayerBust}
+                    setBust={setPlayerBust}
                 />
                 <div className="buttonCluster">
                     <button onClick={() => {
@@ -154,7 +154,7 @@ export default function GamePage() {
 
 
 
-function Hand({ handState, kind, dealerTurn, setDealerBust, setPlayerBust, setDealerCount }) {
+function Hand({ handState, kind, dealerTurn, setBust, setDealerCount }) {
 
 
     function CardBack() {
@@ -171,7 +171,7 @@ function Hand({ handState, kind, dealerTurn, setDealerBust, setPlayerBust, setDe
     return kind == 'player' ?
         (
             <>
-                <Count handState={handState} setPlayerBust={setPlayerBust} kind={kind} />
+                <Count handState={handState} setBust={setBust} kind={kind} />
                 <div>
                     {player}
                 </div>
@@ -179,7 +179,7 @@ function Hand({ handState, kind, dealerTurn, setDealerBust, setPlayerBust, setDe
         ) :
         (
             <>
-                <Count handState={handState} setDealerBust={setDealerBust} kind={kind} setDealerCount={setDealerCount} />
+                <Count handState={handState} setBust={setBust} kind={kind} setDealerCount={setDealerCount} />
                 <div>
                     <CardBack />
                     {player}
@@ -191,45 +191,8 @@ function Hand({ handState, kind, dealerTurn, setDealerBust, setPlayerBust, setDe
 
 
 
-// function Count({ state, setPlayerBust, setDealerBust, kind, setDealerCount }) {
 
-//     let count = 0;
-//     let aceCount = 0;
-
-//     state.forEach((card) => {
-//         card.value == 'ACE' ? aceCount++ : aceCount = aceCount;
-//         count += cardValue(card.value);
-//     });
-
-
-//     if (count > 21 && !aceCount) {
-//         if (kind == 'player') {
-//             setPlayerBust(true);
-//         } else {
-//             setDealerBust(true);
-//         }
-
-//         return <h1>BUSTED!!</h1>
-//     }
-
-
-//     if (count > 21) {
-//         count = count - 10;
-//         if (kind == 'dealer') {
-//             setDealerCount(count)
-//         }
-
-//     } else if (kind == 'dealer') {
-//         setDealerCount(count)
-//     }
-
-
-
-
-//     return <h3>Count: {count}</h3>
-// }
-
-function Count({ handState, setPlayerBust, setDealerBust, kind, setDealerCount }) {
+function Count({ handState, setBust, kind, setDealerCount }) {
   let count = 0;
   let aceCount = 0;
 
@@ -249,13 +212,9 @@ function Count({ handState, setPlayerBust, setDealerBust, kind, setDealerCount }
   // handle busts
   useEffect(() => {
     if (count > 21) {
-      if (kind === 'player') {
-        setPlayerBust(true);
-      } else {
-        setDealerBust(true);
-      }
+      setBust(true);
     }
-  }, [count, kind, setDealerBust, setPlayerBust]);
+  }, [count, kind, setBust]);
 
   // handle dealer count updates safely
   useEffect(() => {
